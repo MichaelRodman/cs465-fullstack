@@ -8,10 +8,16 @@ This project is the Travlr Getaways full stack web application for CS 465. The a
 
 Module 2 refactors the Express application into an MVC-style structure. Routes and views were moved into the app_server folder, controllers were added, and the Travel page was converted from static HTML into a Handlebars view.
 
+## Module 3: Dynamic Templates With JSON
+
+Module 3 moves the Travel page data out of the Handlebars view and into `data/trips.json`. The Travel controller reads and parses the JSON file, passes the trip collection to the view, and `travel.hbs` uses a Handlebars `{{#each}}` loop to render each trip dynamically. This reduces repeated HTML and prepares the application for the later transition to MongoDB.
+
 ## Project Structure
 
 travlr/
   app.js
+  daa/
+    trips.json
   app_server/
     controllers/
       main.js
