@@ -8,7 +8,8 @@ const trips = JSON.parse(
 const travel = (req, res) => {
   res.render('travel', {
     title: 'Travlr Getaways',
-    trips
+    trips,
+    activeTravel: true
   });
 };
 
