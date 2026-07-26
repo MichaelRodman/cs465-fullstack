@@ -17,51 +17,23 @@
                         <div class="body">
                             <h1>Meals</h1>
                             <ul id="foods">
+                                {{#each meals}}
                                 <li>
                                     <h2>
-                                        <a href="/meals">Seafood Special</a>
+                                        <a href="/meals">{{category}}</a>
                                     </h2>
                                     <div class="infos">
                                         <a href="/meals">
-                                            <img src="images/seafoods.jpg" alt="Seafood special" height="169" width="780">
+                                            <img src="images/{{image}}" alt="{{alt}}" height="169" width="780">
                                             <span class="cover"></span>
                                         </a>
                                         <p>
-                                            <span>Fried Salmon Special</span>
-                                            I'm a product overview. Here you can write more information about your product. Buyers like to know ...
+                                            <span>{{name}}</span>
+                                            {{description}}
                                         </p>
                                     </div>
                                 </li>
-                                <li>
-                                    <h2>
-                                        <a href="/meals">Sumptuous Desserts</a>
-                                    </h2>
-                                    <div class="infos">
-                                        <a href="/meals">
-                                            <img src="images/desserts.jpg" alt="Dessert selection" height="169" width="780">
-                                            <span class="cover"></span>
-                                        </a>
-                                        <p>
-                                            <span>Choco Ice Cream Sandwich</span>
-                                            I'm a product overview. Here you can write more information about your product. Buyers like to know ...
-                                        </p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <h2>
-                                        <a href="/meals">Buffet</a>
-                                    </h2>
-                                    <div class="infos">
-                                        <a href="/meals">
-                                            <img src="images/buffet.jpg" alt="Mixed buffet" height="169" width="780">
-                                            <span class="cover"></span>
-                                        </a>
-                                        <p>
-                                            <span>Mixed Buffet</span>
-                                            I'm a product overview. Here you can write more information about your product. Buyers like to know ...
-                                        </p>
-                                    </div>
-                                </li>
+                                {{/each}}
                             </ul>
                         </div>
                     </div>

@@ -1,3 +1,13 @@
+const fs = require('fs');
+
+const roomsData = JSON.parse(
+  fs.readFileSync('./data/rooms.json', 'utf8')
+);
+
+const mealsData = JSON.parse(
+  fs.readFileSync('./data/meals.json', 'utf8')
+);
+
 /* GET Home page */
 const index = (req, res) => {
   res.render('index', {
@@ -10,6 +20,7 @@ const index = (req, res) => {
 const rooms = (req, res) => {
   res.render('rooms', {
     title: 'Rooms - Travlr Getaways',
+    rooms: roomsData,
     activeRooms: true
   });
 };
@@ -18,6 +29,7 @@ const rooms = (req, res) => {
 const meals = (req, res) => {
   res.render('meals', {
     title: 'Meals - Travlr Getaways',
+    meals: mealsData,
     activeMeals: true
   });
 };
