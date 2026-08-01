@@ -4,7 +4,9 @@
 
 Travlr Getaways is a full-stack web application developed with Node.js, Express, Handlebars, MongoDB, Mongoose, and the Model-View-Controller architectural pattern.
 
-The application began as a static customer-facing website and has gradually been refactored into an MVC application with reusable templates, JSON-driven content, and a MongoDB database layer. Later modules will add RESTful API services and an Angular single-page application.
+The application began as a static customer-facing website and has gradually been refactored into an MVC application with reusable templates, JSON-driven content, a MongoDB database layer, and RESTful API services.
+
+The public-facing Express website now retrieves trip data through the REST API rather than reading the trip data file directly. Later modules will add an Angular single-page application and application security.
 
 ## Module 2: MVC Routing
 
@@ -14,9 +16,13 @@ Shared header and footer partials were also created to reduce repeated HTML and 
 
 ## Module 3: Dynamic Templates With JSON
 
-Module 3 moved the Travel page data out of the Handlebars view and into `data/trips.json`.
+Module 3 moved the Travel page data out of the Handlebars view and into:
 
-The Travel controller reads and parses the JSON file, passes the trip collection to the view, and `travel.hbs` uses a Handlebars `{{#each}}` loop to render each trip dynamically. This reduces repeated HTML and prepares the application for the transition to MongoDB.
+```text
+data/trips.json
+```
+
+The Travel controller originally read and parsed the JSON file, passed the trip collection to the view, and used a Handlebars `{{#each}}` loop in `travel.hbs` to render each trip dynamically.
 
 The public-facing Home, Rooms, Meals, News, About, and Contact pages were also converted from static HTML pages into MVC routes, controller functions, and Handlebars views.
 
@@ -28,10 +34,10 @@ Module 4 added the database layer for the Travlr Getaways application.
 
 Mongoose was installed and used to connect the Express application to a local MongoDB database named `travlr`.
 
-The trip model is defined in:
+The trip model is now located at:
 
 ```text
-app_server/models/travlr.js
+app_api/models/travlr.js
 ```
 
 The Mongoose schema includes the following required fields:
@@ -50,7 +56,7 @@ The `code` and `name` fields are indexed to support efficient database searches.
 The database connection is managed in:
 
 ```text
-app_server/models/db.js
+app_api/models/db.js
 ```
 
 This module:
@@ -64,12 +70,80 @@ This module:
 The seed script is located at:
 
 ```text
-app_server/models/seed.js
+app_api/models/seed.js
 ```
 
 The script reads the trip records from `data/trips.json`, removes existing trip records, inserts the current seed data, and closes the database connection.
 
 MongoDB Compass was used to confirm that the `travlr` database contains a `trips` collection with all three complete trip documents.
+
+## Module 5: RESTful API
+
+Module 5 separated the database and API responsibilities from the public-facing Express website.
+
+The RESTful API files are organized into the following structure:
+
+```text
+app_api/
+  controllers/
+    trips.js
+  models/
+    db.js
+    seed.js
+    travlr.js
+  routes/
+    index.js
+```
+
+The API router is mounted in `app.js` at:
+
+```text
+/api
+```
+
+The application provides two GET endpoints:
+
+```text
+GET /api/trips
+GET /api/trips/:tripCode
+```
+
+The collection endpoint retrieves every trip stored in MongoDB.
+
+The parameterized endpoint uses the supplied trip code to retrieve a specific trip. When no matching trip exists, the API returns an HTTP `404 Not Found` response and a JSON error message.
+
+The API controllers use asynchronous Mongoose queries with `async`, `await`, and `try/catch` error handling. Database failures return an HTTP `500 Internal Server Error` response.
+
+### Express Website API Integration
+
+The public-facing Travel controller is located at:
+
+```text
+app_server/controllers/travel.js
+```
+
+The controller no longer reads `data/trips.json` directly. It uses Node.js `fetch()` to request trip data from:
+
+```text
+http://localhost:3000/api/trips
+```
+
+The controller verifies that:
+
+- The API response is successful
+- The returned data is an array
+- The trip collection is not empty
+- API communication errors are handled
+
+The trip collection is then passed to `travel.hbs`, where a Handlebars `{{#each}}` loop renders all three trips.
+
+Each trip image links to its individual API endpoint using the trip code:
+
+```handlebars
+<a href="/api/trips/{{this.code}}">
+```
+
+Selecting a trip image displays the JSON data for that individual trip.
 
 ## Instructor Feedback Enhancement
 
@@ -84,14 +158,14 @@ data/meals.json
 
 The main controller reads both JSON files and passes the data collections to the appropriate views.
 
-The following templates now use Handlebars `{{#each}}` loops:
+The following templates use Handlebars `{{#each}}` loops:
 
 ```text
 app_server/views/rooms.hbs
 app_server/views/meals.hbs
 ```
 
-This continues the MVC and dynamic-template approach used for the Travel page while preserving the original page layouts, images, descriptions, and navigation.
+This continues the MVC and dynamic-template approach while preserving the original page layouts, images, descriptions, and navigation.
 
 ## Project Structure
 
@@ -105,14 +179,19 @@ travlr/
     trips.json
     rooms.json
     meals.json
-  app_server/
+  app_api/
     controllers/
-      main.js
-      travel.js
+      trips.js
     models/
       db.js
       seed.js
       travlr.js
+    routes/
+      index.js
+  app_server/
+    controllers/
+      main.js
+      travel.js
     routes/
       index.js
       travel.js
@@ -138,18 +217,31 @@ travlr/
     stylesheets/
 ```
 
-## Available Routes
+## Available Website Routes
 
 | Route | Purpose |
 |---|---|
 | `/` | Displays the Travlr Getaways homepage. |
-| `/travel` | Displays trip data dynamically from `data/trips.json`. |
+| `/travel` | Retrieves trip data through the REST API and renders the Travel page. |
 | `/rooms` | Displays room data dynamically from `data/rooms.json`. |
 | `/meals` | Displays meal data dynamically from `data/meals.json`. |
 | `/news` | Displays travel news and vacation tips. |
 | `/about` | Displays information about the website and template. |
 | `/contact` | Displays the contact form and contact information. |
 | `/users` | Retains the default Express users route. |
+
+## RESTful API Endpoints
+
+| HTTP Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/trips` | Retrieves the complete collection of trips from MongoDB. |
+| GET | `/api/trips/:tripCode` | Retrieves the trip matching the supplied trip code. |
+
+A successful request returns an HTTP `200 OK` response and JSON data.
+
+A request for an unknown trip code returns an HTTP `404 Not Found` response with a JSON error message.
+
+A database or server failure returns an HTTP `500 Internal Server Error` response.
 
 ## Requirements
 
@@ -159,6 +251,7 @@ The local development environment requires:
 - npm
 - MongoDB Community Server
 - MongoDB Compass
+- Postman
 - Visual Studio Code or another code editor
 
 This project uses Mongoose 8 because the current local Node.js version is compatible with that major release.
@@ -188,7 +281,7 @@ Get-Service MongoDB
 Run the seed script:
 
 ```powershell
-node .\app_server\models\seed.js
+node .\app_api\models\seed.js
 ```
 
 A successful seed displays messages showing that Mongoose connected to and disconnected from:
@@ -211,6 +304,12 @@ Open the application in a browser:
 
 ```text
 http://localhost:3000
+```
+
+Open the Travel page:
+
+```text
+http://localhost:3000/travel
 ```
 
 When the application starts successfully, the terminal displays:
@@ -243,6 +342,49 @@ The collection should contain:
 
 Each document should contain all eight trip schema fields and a MongoDB-generated `_id`.
 
+## Postman API Testing
+
+The RESTful API was tested locally with Postman.
+
+### Complete Trip Collection
+
+```text
+GET http://localhost:3000/api/trips
+```
+
+Expected result:
+
+- HTTP `200 OK`
+- JSON array containing Gale Reef, Dawson's Reef, and Claire's Reef
+
+### Individual Trip
+
+```text
+GET http://localhost:3000/api/trips/GALR210214
+```
+
+Expected result:
+
+- HTTP `200 OK`
+- JSON array containing only the Gale Reef trip
+
+### Unknown Trip Code
+
+```text
+GET http://localhost:3000/api/trips/INVALID123
+```
+
+Expected result:
+
+- HTTP `404 Not Found`
+- JSON response:
+
+```json
+{
+  "message": "Trip with code INVALID123 was not found"
+}
+```
+
 ## Testing Notes
 
 The application was tested locally using `npm start`.
@@ -257,21 +399,20 @@ The following pages rendered successfully through the Express MVC routing struct
 - About
 - Contact
 
-The Travel page rendered all three trips from `data/trips.json`.
+Testing confirmed that:
 
-The Rooms page rendered all three room records from `data/rooms.json`.
-
-The Meals page rendered all three meal records from `data/meals.json`.
-
-The shared header and footer navigation links were tested, including active-page highlighting and the homepage promotional links.
-
-MongoDB testing confirmed that:
-
-- The application connects to the local `travlr` database.
+- The application connects to the local `travlr` MongoDB database.
 - The seed script inserts three trip records.
-- Mongoose can retrieve the stored trip records as JSON.
 - MongoDB Compass displays all required fields in the `trips` collection.
-- Existing MVC pages continue to work after the database integration.
+- `GET /api/trips` returns the complete trip collection.
+- `GET /api/trips/GALR210214` returns the requested individual trip.
+- An invalid trip code returns HTTP `404 Not Found`.
+- The Travel controller receives and processes JSON from the API.
+- The Travel page renders all three MongoDB trip records.
+- Selecting a trip image opens that trip's individual API response.
+- Existing MVC pages continue to work after the API refactor.
+- The Rooms and Meals pages continue to render their JSON-driven content.
+- Shared navigation and active-page highlighting continue to work.
 
 ## Git Branches
 
@@ -282,6 +423,7 @@ module1
 module2
 module3
 module4
+module5
 ```
 
-The Module 4 work is completed on the `module4` branch so the completed work from earlier modules remains preserved.
+The Module 5 RESTful API work is completed on the `module5` branch so the completed work from earlier modules remains preserved.
