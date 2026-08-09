@@ -1,0 +1,41 @@
+<div class="card mb-4">
+  <img
+    src="assets/images/{{ trip.image }}"
+    class="card-img-top"
+    alt="{{ trip.name }}"
+  >
+
+  <div class="card-body">
+    <h5 class="card-title">{{ trip.name }}</h5>
+
+    <p class="card-text">
+      <strong>Resort:</strong> {{ trip.resort }}
+    </p>
+
+    <p class="card-text">
+      <strong>Length:</strong> {{ trip.length }}
+    </p>
+
+    <p class="card-text">
+      <strong>Price:</strong> {{ trip.perPerson | currency:'USD':'symbol' }}
+    </p>
+
+    <div class="card-text" [innerHTML]="trip.description"></div>
+
+    <button
+      type="button"
+      class="btn btn-primary mt-3 me-2"
+      (click)="editTrip(trip.code)"
+    >
+      Edit
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-danger mt-3"
+      (click)="deleteTrip(trip.code)"
+    >
+      Delete
+    </button>
+  </div>
+</div>

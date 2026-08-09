@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1>Travlr Getaways Admin</h1>
+
+      <a
+        class="btn btn-primary mb-3"
+        routerLink="/add-trip"
+      >
+        Add Trip
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4" *ngFor="let trip of trips">
+      <app-trip-card
+        [trip]="trip"
+        (tripDeleted)="onTripDeleted($event)"
+      ></app-trip-card>
+    </div>
+  </div>
+</div>
