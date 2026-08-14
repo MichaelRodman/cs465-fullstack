@@ -70,7 +70,8 @@ process.on('SIGTERM', async () => {
 // Make the initial database connection.
 connect();
 
-// Import the Mongoose schema.
+// Import the Mongoose schemas.
 require('./travlr');
+require('./user');
 
 module.exports = mongoose;
