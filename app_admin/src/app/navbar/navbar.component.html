@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/">Travlr Getaways Admin</a>
+
+    <div class="navbar-nav ms-auto">
+      <a
+        *ngIf="!isLoggedIn()"
+        class="nav-link"
+        routerLink="/login">
+        Log In
+      </a>
+
+      <a
+        *ngIf="isLoggedIn()"
+        class="nav-link"
+        routerLink="/"
+        (click)="onLogout()">
+        Log Out
+      </a>
+    </div>
+  </div>
+</nav>

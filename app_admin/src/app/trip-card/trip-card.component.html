@@ -22,20 +22,22 @@
 
     <div class="card-text" [innerHTML]="trip.description"></div>
 
-    <button
-      type="button"
-      class="btn btn-primary mt-3 me-2"
-      (click)="editTrip(trip.code)"
-    >
-      Edit
-    </button>
+    <div *ngIf="isLoggedIn()">
+      <button
+        type="button"
+        class="btn btn-primary mt-3 me-2"
+        (click)="editTrip(trip.code)"
+      >
+        Edit
+      </button>
 
-    <button
-      type="button"
-      class="btn btn-danger mt-3"
-      (click)="deleteTrip(trip.code)"
-    >
-      Delete
-    </button>
+      <button
+        type="button"
+        class="btn btn-danger mt-3"
+        (click)="deleteTrip(trip.code)"
+      >
+        Delete
+      </button>
+    </div>
   </div>
 </div>

@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TripDataService } from '../services/trip-data.service';
+import { AuthenticationService } from '../services/authentication.service';
 import { Trip } from '../models/trip';
 
 @Component({
@@ -22,8 +23,13 @@ export class TripCardComponent {
 
   constructor(
     private router: Router,
-    private tripDataService: TripDataService
+    private tripDataService: TripDataService,
+    private authenticationService: AuthenticationService
   ) {}
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
+  }
 
   public editTrip(tripCode: string): void {
     localStorage.setItem('tripCode', tripCode);

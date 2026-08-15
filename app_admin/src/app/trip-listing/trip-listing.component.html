@@ -4,6 +4,7 @@
       <h1>Travlr Getaways Admin</h1>
 
       <a
+        *ngIf="isLoggedIn()"
         class="btn btn-primary mb-3"
         routerLink="/add-trip"
       >

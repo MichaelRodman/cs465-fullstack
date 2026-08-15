@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { Trip } from '../models/trip';
+import { User } from '../models/user';
+import { AuthResponse } from '../models/authresponse';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +12,7 @@ import { Trip } from '../models/trip';
 export class TripDataService {
 
   private apiBaseUrl = 'http://localhost:3000/api/trips';
+  private authBaseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
@@ -34,6 +38,27 @@ export class TripDataService {
   public deleteTrip(tripCode: string): Observable<void> {
     return this.http.delete<void>(
       `${this.apiBaseUrl}/${tripCode}`
+    );
+  }
+
+  public login(user: User, passwd: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.authBaseUrl}/login`,
+      {
+        email: user.email,
+        password: passwd
+      }
+    );
+  }
+
+  public register(user: User, passwd: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.authBaseUrl}/register`,
+      {
+        name: user.name,
+        email: user.email,
+        password: passwd
+      }
     );
   }
 }

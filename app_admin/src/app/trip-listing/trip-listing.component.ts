@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TripCardComponent } from '../trip-card/trip-card.component';
 import { TripDataService } from '../services/trip-data.service';
+import { AuthenticationService } from '../services/authentication.service';
 import { Trip } from '../models/trip';
 
 @Component({
@@ -15,7 +16,10 @@ import { Trip } from '../models/trip';
 export class TripListingComponent implements OnInit {
   trips: Trip[] = [];
 
-  constructor(private tripDataService: TripDataService) {}
+  constructor(
+    private tripDataService: TripDataService,
+    private authenticationService: AuthenticationService
+  ) {}
 
   ngOnInit(): void {
     this.tripDataService.getTrips().subscribe({
@@ -26,6 +30,10 @@ export class TripListingComponent implements OnInit {
         console.log('Error retrieving trips:', error);
       }
     });
+  }
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
   }
 
   public onTripDeleted(tripCode: string): void {
