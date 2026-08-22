@@ -1290,7 +1290,7 @@ Testing confirmed that:
 
 ## Git Branches
 
-The project uses a separate Git branch for each course module:
+The project used a separate Git branch to preserve the completed work from each development module:
 
 ```text
 module1
@@ -1302,22 +1302,33 @@ module6
 module7
 ```
 
-Module 6 contains the Angular administrative SPA, expanded RESTful CRUD API, CORS configuration, and completed CRUD testing.
+The `main` branch contains the final portfolio version of Travlr Getaways, including the completed full stack application, authentication and security features, instructor-feedback improvements, and the Module 8 portfolio reflection in this README.
 
-Module 7 adds:
+The earlier module branches remain available to show the progression of the application throughout the course.
 
-- User registration
-- User login
-- Passport Local authentication
-- Salted and hashed passwords
-- JSON Web Tokens
-- Protected POST, PUT, and DELETE API endpoints
-- Angular login and logout
-- Authentication-aware navigation
-- Authentication-aware Add, Edit, and Delete controls
-- Angular JWT HTTP interceptor
-- Authorization support in CORS
-- Optional trip Description validation
-- Authentication and security testing
 
-Each module branch is preserved separately so completed work from earlier modules remains available.
+## Module 8: Portfolio Reflection
+
+### Architecture
+
+Throughout this project, I worked with several different approaches to frontend development. The customer-facing site began as static HTML and was gradually converted into an Express application using Handlebars templates, routes, and controllers. This approach renders pages on the server and sends completed HTML to the browser. JavaScript was used throughout the project to control application logic, communicate with the backend, and support more dynamic behavior. Later in the course, I developed the Angular administrative single-page application (SPA). Unlike the Express site, the Angular SPA loads the application in the browser and updates individual components without reloading an entire page. I found the SPA approach especially useful for the administrative side because reusable components, services, routing, and reactive forms made adding, editing, and deleting trip information more interactive and organized.
+
+The backend uses MongoDB because its NoSQL document structure works well with the type of data used in Travlr Getaways. Trip records can be stored as documents with fields such as the trip code, name, resort, price, image, and description. MongoDB also works naturally with Mongoose models and the JSON data exchanged through the REST API. As the project developed, this made it easier for both the Express customer site and Angular administrative SPA to retrieve the same trip information from one database. Using MongoDB also gave the application a flexible data structure that could be updated as the project requirements changed.
+
+### Functionality
+
+JSON and JavaScript are related, but they serve different purposes. JavaScript is a programming language used to create application behavior and logic, while JSON is a data format used to represent and exchange structured information. In Travlr Getaways, JSON helped connect the frontend and backend because trip data could move through the REST API in a format that both sides could work with. MongoDB stored the trip information in document-style records, Express and Mongoose retrieved that information, and the API returned it as JSON. The Angular SPA then received that data through the TripDataService and displayed it in reusable components.
+
+Refactoring was a major part of the development process throughout the course. The project began with static HTML and was refactored into an MVC structure with Express routes, controllers, Handlebars views, and shared partials. Trip information was then moved out of the page and into JSON data before later being stored in MongoDB. The customer-facing Travel page was also refactored so it retrieved trip information through the REST API instead of reading the JSON file directly. On the Angular side, reusable components and services helped keep responsibilities separated. For example, each trip is displayed through the TripCardComponent while TripListingComponent manages the overall list, and TripDataService handles communication with the API. Reusable UI components reduce repeated code, make updates easier, improve consistency, and make the application easier to maintain as it grows.
+
+### Testing
+
+Testing the full stack application helped me understand how HTTP methods, API endpoints, and security all work together. Each endpoint has a specific purpose, and the HTTP method tells the server what type of action is being requested. In Travlr Getaways, GET requests retrieve trip data, POST creates new records, PUT updates existing records, and DELETE removes records. I used Postman to test these endpoints directly before relying on the frontend. This made it easier to confirm whether problems were coming from the API itself or from the user interface.
+
+Adding authentication made API testing more involved because protected requests required a valid JSON Web Token. I tested login and registration to confirm that a JWT was returned, then used that token with protected POST, PUT, and DELETE requests. I also tested missing and invalid tokens and confirmed that those requests returned `401 Unauthorized`. At the same time, public GET requests continued to work without authentication. This showed me that hiding buttons in the Angular interface is not enough by itself; the backend must also enforce authorization. Testing with Postman, MongoDB Compass, the Angular application, and browser developer tools helped verify that the frontend, API, security layer, and database were all working together correctly.
+
+### Reflection
+
+This course helped me see full stack development as one connected process instead of a collection of separate technologies. Earlier in the course, I was working with individual pieces such as Express routes, Handlebars views, and JSON files. By the end of the project, I had a much better understanding of how the frontend, backend, API, database, and security layers communicate with each other. Building Travlr Getaways step by step made the overall architecture much easier for me to understand because I was able to see how each new feature changed and improved the application.
+
+I also developed skills that I can apply to future software development work, including MVC architecture, RESTful APIs, MongoDB and Mongoose, Angular components and services, CRUD operations, authentication, JSON Web Tokens, API testing, debugging, and Git version control. One of the most valuable parts of the course was learning how to troubleshoot problems across multiple layers instead of only looking at one file or one part of the application. I now feel more comfortable following data from the user interface through the API and into the database, as well as testing each part of that process. Having experience building and securing a complete full stack application gives me a stronger project to discuss with employers and adds practical skills that make me a more marketable candidate for software development roles.
