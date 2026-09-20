@@ -1,7 +1,38 @@
+/**
+ * File: trips.js
+ * Author: Michael Rodman
+ * Date: September 20, 2026
+ * Course: CS 499 Computer Science Capstone
+ *
+ * Purpose:
+ * Handle REST API operations for Travlr trip records. Capstone
+ * enhancements add explicit server-side request validation and
+ * standardized error responses that do not expose internal details.
+ */
+
 const mongoose = require('mongoose');
 require('../models/travlr');
 
+const { validateTrip } = require('../utils/tripValidation');
+
 const Trip = mongoose.model('trips');
+
+/**
+ * Logs an internal server error while returning only a safe,
+ * user-facing message to the API client.
+ *
+ * @param {*} res - Express response object.
+ * @param {string} message - Safe response message.
+ * @param {*} err - Internal error object.
+ * @returns {*} Express response.
+ */
+const sendServerError = (res, message, err) => {
+  console.error(`${message}:`, err);
+
+  return res
+    .status(500)
+    .json({ message });
+};
 
 // GET /api/trips
 // Returns every trip stored in MongoDB.
@@ -13,12 +44,11 @@ const tripsList = async (req, res) => {
       .status(200)
       .json(trips);
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: 'Unable to retrieve trips',
-        error: err.message
-      });
+    return sendServerError(
+      res,
+      'Unable to retrieve trips',
+      err
+    );
   }
 };
 
@@ -42,18 +72,28 @@ const tripsFindByCode = async (req, res) => {
       .status(200)
       .json(trips);
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: 'Unable to retrieve the requested trip',
-        error: err.message
-      });
+    return sendServerError(
+      res,
+      'Unable to retrieve the requested trip',
+      err
+    );
   }
 };
 
 // POST /api/trips
 // Creates a new trip in MongoDB.
 const tripsAddTrip = async (req, res) => {
+  const validation = validateTrip(req.body);
+
+  if (!validation.isValid) {
+    return res
+      .status(400)
+      .json({
+        message: 'Invalid trip data',
+        errors: validation.errors
+      });
+  }
+
   try {
     const newTrip = new Trip({
       code: req.body.code,
@@ -72,18 +112,28 @@ const tripsAddTrip = async (req, res) => {
       .status(201)
       .json(savedTrip);
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: 'Unable to add trip',
-        error: err.message
-      });
+    return sendServerError(
+      res,
+      'Unable to add trip',
+      err
+    );
   }
 };
 
 // PUT /api/trips/:tripCode
 // Updates the trip that matches the supplied trip code.
 const tripsUpdateTrip = async (req, res) => {
+  const validation = validateTrip(req.body);
+
+  if (!validation.isValid) {
+    return res
+      .status(400)
+      .json({
+        message: 'Invalid trip data',
+        errors: validation.errors
+      });
+  }
+
   try {
     const updatedTrip = await Trip.findOneAndUpdate(
       { code: req.params.tripCode },
@@ -105,22 +155,21 @@ const tripsUpdateTrip = async (req, res) => {
 
     if (!updatedTrip) {
       return res
-        .status(400)
+        .status(404)
         .json({
           message: `Trip with code ${req.params.tripCode} was not found`
         });
     }
 
     return res
-      .status(201)
+      .status(200)
       .json(updatedTrip);
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: 'Unable to update trip',
-        error: err.message
-      });
+    return sendServerError(
+      res,
+      'Unable to update trip',
+      err
+    );
   }
 };
 
@@ -144,12 +193,11 @@ const tripsDeleteTrip = async (req, res) => {
       .status(204)
       .send();
   } catch (err) {
-    return res
-      .status(500)
-      .json({
-        message: 'Unable to delete trip',
-        error: err.message
-      });
+    return sendServerError(
+      res,
+      'Unable to delete trip',
+      err
+    );
   }
 };
 
